@@ -7,7 +7,7 @@
 
     <servlet>
         <servlet-name>twitter</servlet-name>
-        <servlet-class>com.ok.servlets.TwitServlet</servlet-class>
+        <servlet-class>com.ok.servlets.TweetServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>twitter</servlet-name>

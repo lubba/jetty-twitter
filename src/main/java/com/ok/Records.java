@@ -15,23 +15,15 @@ public class Records {
         if (files.isEmpty()){
             addNewFile();
         }
-        //TODO .tw - tweets, .twc - tweet count
         File file = files.get(files.size() - 1);
-        FileReader reader = null;
-        try {
-            reader = new FileReader(file);
-            reader
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        if (file.length() > numInFile){
+            file = addNewFile();
         }
         FileWriter writer = null;
         try {
             writer = new FileWriter(file);
-
-            if (writer.)
             writer.append(line);
-            writer.
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,10 +37,12 @@ public class Records {
         }
     }
 
-    private static void addNewFile() {
+    private static File addNewFile() {
         String filename = getNewFileName();
+        File file = null;
             try {
-                File file = new File(directory.getCanonicalPath()+"/"+filename);
+                file = new File(directory.getCanonicalPath()+"/"+filename);
+                files.add(file);
                 if (file.exists()){
                     throw new IndexOutOfBoundsException("This cannot be");
                     //TODO change on cycle
@@ -59,6 +53,7 @@ public class Records {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        return file;
     }
 
     private static String getNewFileName() {
@@ -72,6 +67,8 @@ public class Records {
     public static void init(){
         String dir = "alltweets/";
         directory = new File(dir);
+        if (!directory.exists())
+            directory.mkdir();
         System.out.println(directory.getAbsoluteFile());
         files = (ArrayList<File>) Arrays.asList(directory.listFiles());
         for (File file : files)
