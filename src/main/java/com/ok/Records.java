@@ -1,7 +1,85 @@
 package com.ok;
 
-/**
- * Created by luba on 13.11.15.
- */
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Records {
+    private final static int numInFile = 1000;
+    private static File directory;
+	private static ArrayList<File> files;
+    public static void add(String line){
+        if (files == null){
+            files = new ArrayList<File>();
+        }
+        if (files.isEmpty()){
+            addNewFile();
+        }
+        //TODO .tw - tweets, .twc - tweet count
+        File file = files.get(files.size() - 1);
+        FileReader reader = null;
+        try {
+            reader = new FileReader(file);
+            reader
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+
+            if (writer.)
+            writer.append(line);
+            writer.
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (writer != null)
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+    }
+
+    private static void addNewFile() {
+        String filename = getNewFileName();
+            try {
+                File file = new File(directory.getCanonicalPath()+"/"+filename);
+                if (file.exists()){
+                    throw new IndexOutOfBoundsException("This cannot be");
+                    //TODO change on cycle
+                }
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    }
+
+    private static String getNewFileName() {
+        return null;
+    }
+
+    public static ArrayList<Tweet> get() {
+		return null;
+	}
+
+    public static void init(){
+        String dir = "alltweets/";
+        directory = new File(dir);
+        System.out.println(directory.getAbsoluteFile());
+        files = (ArrayList<File>) Arrays.asList(directory.listFiles());
+        for (File file : files)
+            System.out.println(file.getName());
+    }
+
+    static {
+        init();
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.ok.servlets;
 
+import com.ok.Records;
 import com.ok.Tweet;
 
 import javax.servlet.ServletException;
@@ -7,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TweetServlet extends HttpServlet {
 
@@ -15,20 +17,21 @@ public class TweetServlet extends HttpServlet {
 	}
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		forward(req,resp);
+		ArrayList<Tweet> tweets = Records.get();
+            if (tweets == null)
+                System.out.println("Null");
+            System.out.println("doPost");
+            req.getSession().setAttribute("tweets",tweets);
+        forward(req,resp);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String action = req.getParameter("action");
         if ("search".equals(action)) {
-            String line = (String) req.getParameter("tweetline");
-            LinkedList<Tweet> docs = Records.add(line);
-            if (docs == null)
-                System.out.println("Null");
-            System.out.println("doPost in Search");
-            req.getSession().setAttribute("docs",docs);
-            resp.sendRedirect("/serverapp/res");
+            String line = req.getParameter("tweetline");
+             Records.add(line);
+            System.out.println("doPost");
         }
 
 		forward(req, resp);
