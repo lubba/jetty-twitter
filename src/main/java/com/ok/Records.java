@@ -3,27 +3,44 @@ package com.ok;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Logger;
 
 public class Records {
     private final static int numInFile = 1000;
     private static File directory;
-	private static ArrayList<File> files;
+	private static List<File> files;
+	private static Logger logger = Logger.getLogger("Records");
+	private static ArrayList<Tweet> tweets;
     public static void add(String line){
-        if (files == null){
+		logger.info("in add");
+		if (files == null){
             files = new ArrayList<File>();
         }
         if (files.isEmpty()){
-            addNewFile();
-        }
+			try {
+				addNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		logger.info("Files size = "+ files.size());
         File file = files.get(files.size() - 1);
 
         if (file.length() > numInFile){
-            file = addNewFile();
-        }
-        FileWriter writer = null;
+			try {
+				file = addNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		Tweet tweet = new Tweet("name",line);
+        BufferedWriter writer = null;
         try {
-            writer = new FileWriter(file);
-            writer.append(line);
+            writer = new BufferedWriter(new FileWriter(file,true));
+			writer.write(tweet.toString());
+			writer.newLine();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,42 +54,58 @@ public class Records {
         }
     }
 
-    private static File addNewFile() {
-        String filename = getNewFileName();
-        File file = null;
-            try {
-                file = new File(directory.getCanonicalPath()+"/"+filename);
-                files.add(file);
-                if (file.exists()){
-                    throw new IndexOutOfBoundsException("This cannot be");
-                    //TODO change on cycle
-                }
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        return file;
-    }
+    private static File addNewFile() throws IOException {
+		logger.info("addNewFile");
+		Random random = new Random();
+		int i = random.nextInt();
+		File file = new File(directory.getCanonicalPath() + "/" + i);
+		while (file.exists()) {
+			i = random.nextInt();
+			file = new File(directory.getCanonicalPath() + "/" + i);
+		}
+		file.createNewFile();
+		files.add(file);
+		return file;
+	}
 
-    private static String getNewFileName() {
-        return null;
-    }
 
     public static ArrayList<Tweet> get() {
-		return null;
+		logger.info("get");
+		String line;
+		try {
+			for (File file : files){
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				while ((line = reader.readLine()) != null) {
+					String[] tweetinfo = line.split("&&");
+					String name = "", text = "";
+					if (tweetinfo != null && tweetinfo.length > 0) {
+						name = tweetinfo[0];
+						if (tweetinfo.length > 1)
+							text = tweetinfo[1];
+					}
+					tweets.add(new Tweet(name, text));
+				}
+				reader.close();
+
+			}
+		} catch (FileNotFoundException e) {
+				e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return tweets;
 	}
 
     public static void init(){
+		logger.info("init");
         String dir = "alltweets/";
         directory = new File(dir);
         if (!directory.exists())
             directory.mkdir();
-        System.out.println(directory.getAbsoluteFile());
-        files = (ArrayList<File>) Arrays.asList(directory.listFiles());
-        for (File file : files)
-            System.out.println(file.getName());
+		files = new ArrayList<File>();
+        files.addAll(Arrays.asList(directory.listFiles()));
+
+		tweets = new ArrayList<Tweet>();
     }
 
     static {

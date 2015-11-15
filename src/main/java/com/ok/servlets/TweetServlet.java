@@ -9,31 +9,40 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TweetServlet extends HttpServlet {
 
 	private void forward(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.getRequestDispatcher("index.jsp").forward(req, resp);
+		req.getRequestDispatcher("../index.jsp").forward(req, resp);
 	}
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		ArrayList<Tweet> tweets = Records.get();
-            if (tweets == null)
-                System.out.println("Null");
-            System.out.println("doPost");
-            req.getSession().setAttribute("tweets",tweets);
+		System.out.println("doGet");
+		List<Tweet> tweets = Records.get();
+		req.getSession().setAttribute("tweets",tweets);
+		List<Tweet> tweetsAttr = (List<Tweet>) req.getSession().getAttribute("tweets");
+
+		if (tweetsAttr == null)
+			System.out.println("No tweets yet");
+		else {
+			for (Tweet tweet : tweetsAttr){
+				System.out.println(tweet);
+			}
+		}
         forward(req,resp);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		System.out.println("doPost");
 		String action = req.getParameter("action");
-        if ("search".equals(action)) {
+		if ("tweet".equals(action)) {
             String line = req.getParameter("tweetline");
-             Records.add(line);
-            System.out.println("doPost");
-        }
+			Records.add(line);
 
-		forward(req, resp);
+        }
+		doGet(req,resp);
+		//forward(req, resp);
 	}
 }
